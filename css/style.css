@@ -1,0 +1,41 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI','Noto Sans Gujarati',sans-serif;
+  background:#0f172a;color:#e2e8f0;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.card{
+  background:#1e293b;border-radius:20px;padding:32px 24px;
+  width:100%;max-width:440px;box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+.logo{text-align:center;font-size:48px;margin-bottom:8px}
+h1{text-align:center;font-size:22px;color:#fff;margin-bottom:4px}
+.sub{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:#cbd5e1}
+input{
+  width:100%;padding:11px 14px;border:2px solid #334155;border-radius:12px;
+  background:#0f172a;color:#fff;font-size:15px;margin-bottom:14px;outline:none;
+}
+input:focus{border-color:#10b981}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.row{grid-template-columns:1fr}}
+button{
+  width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;
+}
+button:disabled{opacity:.6;cursor:not-allowed}
+.links{text-align:center;margin-top:18px;font-size:14px;color:#94a3b8}
+.links a{color:#34d399;font-weight:700;text-decoration:none}
+.msg{display:none;padding:12px;border-radius:10px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.msg.err{display:block;background:#450a0a;color:#fca5a5}
+.msg.ok{display:block;background:#052e16;color:#86efac}
+.note{background:#422006;color:#fde68a;font-size:12px;padding:10px 12px;border-radius:10px;margin-bottom:14px;line-height:1.4}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#0f172a;padding:4px;border-radius:12px;margin-bottom:20px}
+.nav a{text-align:center;padding:10px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;color:#94a3b8}
+.nav a.active{background:#1e293b;color:#34d399}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155;font-size:14px}
+.info-row:last-child{border:none}
+.info-row .lbl{color:#94a3b8}
+.info-row .val{font-weight:600;color:#fff;text-align:right;max-width:60%}
+.btn-out{display:inline-block;margin-top:16px;padding:10px 18px;background:#334155;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px}
+body.page-home{align-items:flex-start;padding-top:40px}

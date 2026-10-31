@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>શાળા હોમ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-home">
+<div class="card">
+  <div class="logo">🏫</div>
+  <h1 id="title">શાળા ડેશબોર્ડ</h1>
+  <p class="sub" id="welcome">લોડ થઈ રહ્યું છે...</p>
+  <div id="msg" class="msg"></div>
+  <div id="info"></div>
+  <a class="btn-out" href="index.html" id="logout">લોગઆઉટ</a>
+</div>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+(function () {
+  var mobile = getSessionMobile();
+  if (!mobile) {
+    document.getElementById('welcome').textContent = 'લોગિન જરૂરી છે';
+    document.getElementById('msg').className = 'msg err';
+    document.getElementById('msg').innerHTML = '<a href="index.html" style="color:#fca5a5">→ લોગિન કરો</a>';
+    return;
+  }
+  document.getElementById('logout').onclick = function () { clearSession(); };
+  apiInfo(mobile)
+    .then(function (r) {
+      if (!r || !r.ok) {
+        document.getElementById('welcome').textContent = 'ડેટા મળ્યો નહીં';
+        document.getElementById('msg').className = 'msg err';
+        document.getElementById('msg').innerHTML = (r && r.msg) || 'ફરી લોગિન કરો';
+        return;
+      }
+      document.getElementById('welcome').textContent = 'સ્વાગત છે, ' + r.schoolName;
+      document.getElementById('info').innerHTML =
+        '<div class="info-row"><span class="lbl">શાળા</span><span class="val">' + r.schoolName + '</span></div>' +
+        '<div class="info-row"><span class="lbl">UDISE</span><span class="val">' + r.udise + '</span></div>' +
+        '<div class="info-row"><span class="lbl">મોબાઇલ</span><span class="val">' + r.mobile + '</span></div>' +
+        '<div class="info-row"><span class="lbl">ઇમેઇલ</span><span class="val">' + (r.email || '-') + '</span></div>';
+    })
+    .catch(function (err) {
+      document.getElementById('welcome').textContent = 'ભૂલ';
+      document.getElementById('msg').className = 'msg err';
+      document.getElementById('msg').textContent = err.message || err;
+    });
+})();
+</script>
+</body>
+</html>

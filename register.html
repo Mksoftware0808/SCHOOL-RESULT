@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>શાળા રજિસ્ટર</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="card">
+  <div class="logo">🏫</div>
+  <h1>શાળા રજિસ્ટર</h1>
+  <p class="sub">મુક્ત નોંધણી – Google Sheet ઓટો બનશે</p>
+  <div class="nav">
+    <a href="index.html">લોગિન</a>
+    <a href="register.html" class="active">રજિસ્ટર</a>
+  </div>
+  <div id="msg" class="msg"></div>
+  <div class="note">⚠️ શાળાનું નામ ગુજરાતીમાં લખો. મોબાઇલ 10 અંક, UDISE 11 અંક.</div>
+  <form id="form">
+    <label>શાળાનું નામ *</label>
+    <input type="text" id="schoolName" required placeholder="શ્રી સરસ્વતી પ્રાથમિક શાળા">
+    <div class="row">
+      <div>
+        <label>મોબાઇલ *</label>
+        <input type="tel" id="mobile" required maxlength="10" pattern="[0-9]{10}" placeholder="98XXXXXXXX">
+      </div>
+      <div>
+        <label>UDISE *</label>
+        <input type="text" id="udise" required maxlength="11" pattern="[0-9]{11}" placeholder="24XXXXXXXXX">
+      </div>
+    </div>
+    <label>ઇમેઇલ</label>
+    <input type="email" id="email" placeholder="school@gmail.com">
+    <div class="row">
+      <div>
+        <label>પાસવર્ડ *</label>
+        <input type="password" id="password" required minlength="6" placeholder="min 6">
+      </div>
+      <div>
+        <label>કન્ફર્મ *</label>
+        <input type="password" id="confirm" required minlength="6" placeholder="ફરીથી">
+      </div>
+    </div>
+    <button type="submit" id="btn">✅ રજિસ્ટર કરો</button>
+  </form>
+  <div class="links">પહેલેથી ખાતું? <a href="index.html">લોગિન</a></div>
+</div>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+function show(t, ok) {
+  var el = document.getElementById('msg');
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+  el.innerHTML = t;
+}
+document.getElementById('form').onsubmit = function (e) {
+  e.preventDefault();
+  var schoolName = document.getElementById('schoolName').value.trim();
+  var mobile = document.getElementById('mobile').value.trim();
+  var udise = document.getElementById('udise').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  var confirm = document.getElementById('confirm').value;
+  if (password !== confirm) { show('પાસવર્ડ મેળ ખાતા નથી', false); return; }
+  if (!/^[0-9]{10}$/.test(mobile)) { show('મોબાઇલ 10 અંક', false); return; }
+  if (!/^[0-9]{11}$/.test(udise)) { show('UDISE 11 અંક', false); return; }
+  var b = document.getElementById('btn');
+  b.disabled = true;
+  b.textContent = '⏳ રજિસ્ટર થઈ રહ્યું છે...';
+  apiRegister({ schoolName: schoolName, mobile: mobile, udise: udise, email: email, password: password })
+    .then(function (r) {
+      if (r && r.ok) {
+        var x = '';
+        if (r.sheetName) x += '<br>📊 ' + r.sheetName;
+        if (r.sheetUrl) x += '<br><a href="' + r.sheetUrl + '" target="_blank" style="color:#86efac">Sheet ખોલો</a>';
+        show('✅ ' + r.msg + x + '<br><br><a href="index.html" style="color:#86efac;font-weight:700">→ લોગિન</a>', true);
+        document.getElementById('form').style.display = 'none';
+      } else {
+        show((r && r.msg) || 'નિષ્ફળ', false);
+        b.disabled = false;
+        b.textContent = '✅ રજિસ્ટર કરો';
+      }
+    })
+    .catch(function (err) {
+      show(err.message || String(err), false);
+      b.disabled = false;
+      b.textContent = '✅ રજિસ્ટર કરો';
+    });
+};
+</script>
+</body>
+</html>

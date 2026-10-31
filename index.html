@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>શાળા લોગિન</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="card">
+  <div class="logo">🏫</div>
+  <h1>શાળા લોગિન</h1>
+  <p class="sub">GitHub Pages + Google Sheets API</p>
+  <div class="nav">
+    <a href="index.html" class="active">લોગિન</a>
+    <a href="register.html">રજિસ્ટર</a>
+  </div>
+  <div id="msg" class="msg"></div>
+  <form id="form">
+    <label>મોબાઇલ / UDISE</label>
+    <input type="text" id="mobile" required placeholder="10 અંકનો મોબાઇલ" autocomplete="username">
+    <label>પાસવર્ડ</label>
+    <input type="password" id="pass" required placeholder="પાસવર્ડ" autocomplete="current-password">
+    <button type="submit" id="btn">🔐 લોગિન</button>
+  </form>
+  <div class="links">નવી શાળા? <a href="register.html">રજિસ્ટર કરો</a></div>
+</div>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+function show(t, ok) {
+  var el = document.getElementById('msg');
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+  el.innerHTML = t;
+}
+document.getElementById('form').onsubmit = function (e) {
+  e.preventDefault();
+  var m = document.getElementById('mobile').value.trim();
+  var p = document.getElementById('pass').value;
+  var b = document.getElementById('btn');
+  b.disabled = true;
+  b.textContent = '⏳ રાહ જુઓ...';
+  apiLogin(m, p)
+    .then(function (r) {
+      if (r && r.ok) {
+        show(r.msg, true);
+        saveSession(r);
+        setTimeout(function () { window.location.href = 'home.html'; }, 600);
+      } else {
+        show((r && r.msg) || 'લોગિન નિષ્ફળ', false);
+        b.disabled = false;
+        b.textContent = '🔐 લોગિન';
+      }
+    })
+    .catch(function (err) {
+      show(err.message || String(err), false);
+      b.disabled = false;
+      b.textContent = '🔐 લોગિન';
+    });
+};
+</script>
+</body>
+</html>
