@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>વર્ગ મેનેજમેન્ટ (Class Management) | Digital Shala</title>
+
+<!-- Favicon: premium SVG school cap icon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231e293b'/%3E%3Cpath d='M16 7L5 13l11 6 11-6z' fill='%2338bdf8'/%3E%3Cpath d='M8 15.5v5.5c0 2 3.6 4 8 4s8-2 8-4v-5.5l-8 4.3z' fill='%230ea5e9'/%3E%3Ccircle cx='24.5' cy='13.5' r='1.5' fill='%2338bdf8'/%3E%3Cline x1='24.5' y1='15' x2='24.5' y2='21' stroke='%2338bdf8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Hind Vadodara"', '"Noto Sans Gujarati"', 'system-ui', '-apple-system', 'sans-serif'],
+          display: ['"Hind Vadodara"', '"Noto Sans Gujarati"', 'system-ui', 'sans-serif'],
+          gujarati: ['"Hind Vadodara"', '"Noto Sans Gujarati"', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Gujarati:wght@400;500;600;700;800;900&family=Hind+Vadodara:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800;900&family=Noto+Serif+Gujarati:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+  try {
+    if (localStorage.getItem('digital_shala_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) {}
+</script>
+<link rel="stylesheet" >
+<style>
+  body, html, button, input, select, textarea {
+    font-family: 'Hind Vadodara', 'Noto Sans Gujarati', system-ui, -apple-system, sans-serif !important;
+  }
+</style>
+
+<script ></script>
+
+<script>
+function syncAllThemeUI(isDark) {
+  try {
+    // 1. Update header theme buttons (both desktop & mobile)
+    document.querySelectorAll('.btn-theme-toggle').forEach(function(el) {
+      const moon = el.querySelector('.icon-moon');
+      const sun = el.querySelector('.icon-sun');
+      const txt = el.querySelector('.theme-text');
+      if (moon && sun) {
+        moon.style.display = isDark ? 'none' : 'inline-flex';
+        sun.style.display = isDark ? 'inline-flex' : 'none';
+      }
+      if (txt) {
+        txt.textContent = isDark ? 'લાઈટ મોડ' : 'ડાર્ક મોડ';
+      }
+    });
+
+    // 2. Sync switch checkbox in settings page
+    const chk = document.getElementById('darkModeToggle');
+    if (chk) {
+      chk.checked = !!isDark;
+    }
+
+    // 3. Sync text status in settings page
+    const txt = document.getElementById('themeStatusText');
+    if (txt) {
+      txt.textContent = isDark ? 'ડાર્ક મોડ સક્રિય (Dark)' : 'લાઈટ મોડ (Light)';
+      txt.className = isDark ? 'text-indigo-600 font-bold' : 'text-emerald-700 font-bold';
+    }
+  } catch (e) {}
+}
+
+function setGlobalTheme(isDark) {
+  try {
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('digital_shala_theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('digital_shala_theme', 'light');
+    }
+    syncAllThemeUI(isDark);
+  } catch (e) {}
+}
+
+function toggleGlobalThemeMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  setGlobalTheme(!isDark);
+}
+
+// Alias for settings.php switch
+function toggleThemeMode(isDark) {
+  setGlobalTheme(!!isDark);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark' || localStorage.getItem('digital_shala_theme') === 'dark';
+  syncAllThemeUI(isDark);
+});
+
+function switchAcademicYear(year) {
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('set_academic_year', year);
+    window.location.href = url.toString();
+  } catch (e) {
+    window.location.search = '?set_academic_year=' + encodeURIComponent(year);
+  }
+}
+function toggleSubmenu(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.classList.toggle('open');
+  if (btn) {
+    btn.classList.toggle('open', isOpen);
+  }
+}
+function toggleDrawer() {
+  const d = document.getElementById('mobileDrawer');
+  if (!d) return;
+  const isOpen = d.classList.toggle('open');
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const d = document.getElementById('mobileDrawer');
+    if (d && d.classList.contains('open')) {
+      d.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
+</script>
+<style>
+  /* Ultra-Premium Header Wallet Button */
+  .topbar-wallet-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 7px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.14) 100%);
+    border: 1.5px solid rgba(99, 102, 241, 0.28);
+    color: #4338ca;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px -1px rgba(99, 102, 241, 0.12);
+  }
+  .topbar-wallet-btn:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.24) 100%);
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.25);
+    color: #312e81;
+  }
+  .dark .topbar-wallet-btn, [data-theme="dark"] .topbar-wallet-btn {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.28) 100%);
+    border-color: rgba(165, 180, 252, 0.35);
+    color: #e0e7ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .wallet-icon-orb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.4);
+    flex-shrink: 0;
+  }
+  .wallet-icon-orb svg {
+    width: 13px;
+    height: 13px;
+  }
+  .wallet-amount-pill {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 900;
+    font-size: 12.5px;
+    letter-spacing: -0.01em;
+  }
+  .wallet-tag-earn {
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 1px 4px rgba(16, 185, 129, 0.35);
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+  /* Mobile Wallet Button */
+  .m-wallet-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+    border: 1.5px solid #c7d2fe;
+    color: #4338ca;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 900;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+    transition: all 0.2s;
+  }
+  .m-wallet-btn:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+    color: #312e81;
+  }
+  .m-wallet-btn svg {
+    width: 15px;
+    height: 15px;
+    color: #6366f1;
+    flex-shrink: 0;
+  }
+  .dark .m-wallet-btn, [data-theme="dark"] .m-wallet-btn {
+    background: #1e1b4b;
+    border-color: #4338ca;
+    color: #e0e7ff;
+  }
+
+@media print {
+  nav, header, aside, footer,
+  .mobile-topbar, .topbar, .mobile-bottom-nav, .app-sidebar, .sidebar-nav, .sidebar-school-card, .sidebar-foot,
+  #mobileDrawer, #schoolNotifModal,
+  .no-print, .btn-notif-trigger, .m-notif-btn, .m-menu-btn, .topbar-wallet-btn, .m-wallet-btn {
+    display: none !important;
+    height: 0 !important;
+    visibility: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+
+<!-- ══ Mobile Drawer ══ -->
+<div id="mobileDrawer">
+  <div class="drawer-overlay" onclick="toggleDrawer()"></div>
+  <div class="drawer-panel">
+    <button type="button" class="drawer-close-btn" onclick="toggleDrawer()" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <a href="?page=dashboard" class="sidebar-brand">
+      <div class="sidebar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div class="sidebar-brand-text">
+        <div class="name">Digital Shala</div>
+        <div class="sub">School Management</div>
+      </div>
+    </a>
+        <div style="padding:7px 12px;margin:8px 14px 4px 14px;border-radius:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:0.02em;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>વર્ષ:</span>
+      </div>
+      <select onchange="switchAcademicYear(this.value)" style="background:#0f172a;border:1px solid rgba(255,255,255,0.22);border-radius:7px;padding:3px 7px;font-size:11.5px;font-weight:800;color:#f8fafc;cursor:pointer;outline:none;">
+                  <option value="2025-26" >
+            2025-26          </option>
+                  <option value="2026-27" selected>
+            2026-27 (ચાલુ વર્ષ)          </option>
+                  <option value="2027-28" >
+            2027-28          </option>
+                  <option value="2028-29" >
+            2028-29          </option>
+                  <option value="2029-30" >
+            2029-30          </option>
+              </select>
+    </div>
+            <div class="sidebar-school-card">
+      <div class="sidebar-school-avatar">શ્રી</div>
+      <div class="sidebar-school-info">
+        <div class="sidebar-school-title" title="શ્રી દેશોત્તર પ્રાથમિક શાળા">શ્રી દેશોત્તર પ્રાથમિક શાળા</div>
+        <div class="sidebar-school-sub">
+          <span class="pulse-dot emerald" style="width:6px;height:6px;"></span>
+          <span>UDISE: 24050405501</span>
+        </div>
+      </div>
+    </div>
+        <nav class="sidebar-nav">
+      <div class="nav-label">પરિણામ સિસ્ટમ મેનુ</div><a href="?page=dashboard" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>← મુખ્ય ડેશબોર્ડ</span></a><a href="?page=school-info" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>શાળા પ્રોફાઇલ</span></a><a href="?page=classes" class=" active" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 8h10M7 12h6"/></svg><span>વર્ગ મેનેજમેન્ટ</span></a><a href="?page=students" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>વિદ્યાર્થી યાદી</span></a><a href="?page=import" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Excel આયાત</span></a><div class="nav-has-children"><button type="button" class="nav-parent-btn" onclick="toggleSubmenu('sub_result_m', this)">  <div class="nav-left">    <span class="parent-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></span>    <span>પરિણામ સિસ્ટમ</span>  </div>  <div class="nav-right"><span class="nav-badge">પરીક્ષા</span>    <span class="chevron-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>  </div></button><div id="sub_result_m" class="nav-submenu"><a href="?page=result" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પરિણામ ડેશબોર્ડ</span></a><a href="marks.php?modal=1" class="" onclick="if(window.openMarksOptionsModal){ openMarksOptionsModal(); return false; }" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ગુણ એન્ટ્રી</span></a><a href="patrak_a.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક A (રચનાત્મક)</span><span style="margin-left:auto;font-size:9px;font-weight:800;background:#10b981;color:#fff;padding:1px 5px;border-radius:4px;letter-spacing:0.02em;line-height:1.2;">FREE</span></a><a href="patrak_b.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક B (વ્યક્તિત્વ)</span></a><a href="?page=patrak-c" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક C</span></a><a href="patrak_f.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક F (પ્રગતિ પત્રક)</span></a><a href="patrak_g.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક G (શાળાંત પ્રમાણપત્ર)</span></a><a href="trimasik-slips.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ત્રિમાસિક ગુણ સ્લિપ</span></a><a href="?page=trimasik" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ત્રિમાસિક પરિણામ પત્રક</span></a><a href="semester-slips.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>સત્ર મુજબ ગુણ સ્લિપ</span></a><a href="question-marks-slip.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પ્રશ્નવાર ગુણ સ્લિપ</span></a><a href="?page=toppers" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ટોપર્સ વિદ્યાર્થીઓ (Top 3)</span></a><a href="?page=hpc-cards" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>HPC કાર્ડ</span></a><a href="?page=parinam-portal" class="nav-submenu-portal" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet" style="background:#06b6d4;box-shadow:0 0 6px #06b6d4;"></span>  <span style="font-weight:700;color:#e0f2fe;">પરિણામ પોર્ટલ</span>  <span class="badge-online-live"><span class="badge-online-dot"></span>ઓનલાઇન</span></a></div></div><a href="parixa-management.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg><span>પરીક્ષા મેનેજમેન્ટ</span><span style="margin-left:auto;font-size:9.5px;font-weight:800;background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;letter-spacing:0.02em;line-height:1.2;">FREE</span></a><a href="swiftchat-auto.php" class="nav-swiftchat-link">  <span class="nav-swiftchat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span>  <span class="nav-swiftchat-text">SwiftChat ઓટો એન્ટ્રી</span>  <span class="badge-swift-live"><span class="badge-swift-dot"></span>LIVE</span></a><a href="my-subscription.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>મારું સબ્સ્ક્રિપ્શન</span></a><a href="subscribe.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg><span>પ્લાન એક્ટિવેશન</span></a><a href="guide.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M6 6h10M6 10h10"/></svg><span>વપરાશકર્તા માર્ગદર્શિકા</span></a><a href="?page=settings" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>સેટિંગ્સ &amp; કંટ્રોલ</span></a><a href="my-account.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>મારું એકાઉન્ટ &amp; પાસવર્ડ</span></a>    </nav>
+    <div class="sidebar-foot" style="display:flex;flex-direction:column;gap:8px;">
+      <a href="https://wa.me/919016305029?text=%E0%AA%A8%E0%AA%AE%E0%AA%B8%E0%AB%8D%E0%AA%A4%E0%AB%87%2C+Digital+Shala+%E0%AA%AA%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%9F%E0%AA%B2+%E0%AA%B8%E0%AA%AA%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%9F+%E0%AA%B8%E0%AA%B9%E0%AA%BE%E0%AA%AF+%E0%AA%9C%E0%AB%8B%E0%AA%88%E0%AA%8F+%E0%AA%9B%E0%AB%87." target="_blank" style="display:flex;align-items:center;gap:8px;font-size:12px;color:#10b981;font-weight:700;padding:6px 10px;border-radius:8px;background:rgba(16,185,129,0.08);text-decoration:none;border:1px solid rgba(16,185,129,0.2);">
+        <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i> WhatsApp: 9016305029
+      </a>
+      <a href="logout.php"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> લૉગ આઉટ</a>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell">
+
+  <!-- ══ Desktop Sidebar ══ -->
+    <aside class="sidebar">
+    <a href="?page=dashboard" class="sidebar-brand">
+      <div class="sidebar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div class="sidebar-brand-text">
+        <div class="name">Digital Shala</div>
+        <div class="sub">School Management</div>
+      </div>
+    </a>
+        <div style="padding:7px 12px;margin:8px 14px 4px 14px;border-radius:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:0.02em;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>વર્ષ:</span>
+      </div>
+      <select onchange="switchAcademicYear(this.value)" style="background:#0f172a;border:1px solid rgba(255,255,255,0.22);border-radius:7px;padding:3px 7px;font-size:11.5px;font-weight:800;color:#f8fafc;cursor:pointer;outline:none;">
+                  <option value="2025-26" >
+            2025-26          </option>
+                  <option value="2026-27" selected>
+            2026-27 (ચાલુ વર્ષ)          </option>
+                  <option value="2027-28" >
+            2027-28          </option>
+                  <option value="2028-29" >
+            2028-29          </option>
+                  <option value="2029-30" >
+            2029-30          </option>
+              </select>
+    </div>
+            <div class="sidebar-school-card">
+      <div class="sidebar-school-avatar">શ્રી</div>
+      <div class="sidebar-school-info">
+        <div class="sidebar-school-title" title="શ્રી દેશોત્તર પ્રાથમિક શાળા">શ્રી દેશોત્તર પ્રાથમિક શાળા</div>
+        <div class="sidebar-school-sub">
+          <span class="pulse-dot emerald" style="width:6px;height:6px;"></span>
+          <span>UDISE: 24050405501</span>
+        </div>
+      </div>
+    </div>
+        <nav class="sidebar-nav">
+      <div class="nav-label">પરિણામ સિસ્ટમ મેનુ</div><a href="?page=dashboard" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>← મુખ્ય ડેશબોર્ડ</span></a><a href="?page=school-info" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>શાળા પ્રોફાઇલ</span></a><a href="?page=classes" class=" active" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 8h10M7 12h6"/></svg><span>વર્ગ મેનેજમેન્ટ</span></a><a href="?page=students" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>વિદ્યાર્થી યાદી</span></a><a href="?page=import" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Excel આયાત</span></a><div class="nav-has-children"><button type="button" class="nav-parent-btn" onclick="toggleSubmenu('sub_result', this)">  <div class="nav-left">    <span class="parent-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></span>    <span>પરિણામ સિસ્ટમ</span>  </div>  <div class="nav-right"><span class="nav-badge">પરીક્ષા</span>    <span class="chevron-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>  </div></button><div id="sub_result" class="nav-submenu"><a href="?page=result" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પરિણામ ડેશબોર્ડ</span></a><a href="marks.php?modal=1" class="" onclick="if(window.openMarksOptionsModal){ openMarksOptionsModal(); return false; }" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ગુણ એન્ટ્રી</span></a><a href="patrak_a.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક A (રચનાત્મક)</span><span style="margin-left:auto;font-size:9px;font-weight:800;background:#10b981;color:#fff;padding:1px 5px;border-radius:4px;letter-spacing:0.02em;line-height:1.2;">FREE</span></a><a href="patrak_b.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક B (વ્યક્તિત્વ)</span></a><a href="?page=patrak-c" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક C</span></a><a href="patrak_f.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક F (પ્રગતિ પત્રક)</span></a><a href="patrak_g.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પત્રક G (શાળાંત પ્રમાણપત્ર)</span></a><a href="trimasik-slips.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ત્રિમાસિક ગુણ સ્લિપ</span></a><a href="?page=trimasik" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ત્રિમાસિક પરિણામ પત્રક</span></a><a href="semester-slips.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>સત્ર મુજબ ગુણ સ્લિપ</span></a><a href="question-marks-slip.php" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>પ્રશ્નવાર ગુણ સ્લિપ</span></a><a href="?page=toppers" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>ટોપર્સ વિદ્યાર્થીઓ (Top 3)</span></a><a href="?page=hpc-cards" class="" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet"></span>  <span>HPC કાર્ડ</span></a><a href="?page=parinam-portal" class="nav-submenu-portal" style="display:flex;align-items:center;">  <span class="nav-submenu-bullet" style="background:#06b6d4;box-shadow:0 0 6px #06b6d4;"></span>  <span style="font-weight:700;color:#e0f2fe;">પરિણામ પોર્ટલ</span>  <span class="badge-online-live"><span class="badge-online-dot"></span>ઓનલાઇન</span></a></div></div><a href="parixa-management.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg><span>પરીક્ષા મેનેજમેન્ટ</span><span style="margin-left:auto;font-size:9.5px;font-weight:800;background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;letter-spacing:0.02em;line-height:1.2;">FREE</span></a><a href="swiftchat-auto.php" class="nav-swiftchat-link">  <span class="nav-swiftchat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span>  <span class="nav-swiftchat-text">SwiftChat ઓટો એન્ટ્રી</span>  <span class="badge-swift-live"><span class="badge-swift-dot"></span>LIVE</span></a><a href="my-subscription.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>મારું સબ્સ્ક્રિપ્શન</span></a><a href="subscribe.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg><span>પ્લાન એક્ટિવેશન</span></a><a href="guide.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M6 6h10M6 10h10"/></svg><span>વપરાશકર્તા માર્ગદર્શિકા</span></a><a href="?page=settings" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>સેટિંગ્સ &amp; કંટ્રોલ</span></a><a href="my-account.php" class="" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>મારું એકાઉન્ટ &amp; પાસવર્ડ</span></a>    </nav>
+    <div class="sidebar-foot" style="display:flex;flex-direction:column;gap:8px;">
+      <a href="https://wa.me/919016305029?text=%E0%AA%A8%E0%AA%AE%E0%AA%B8%E0%AB%8D%E0%AA%A4%E0%AB%87%2C+Digital+Shala+%E0%AA%AA%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%9F%E0%AA%B2+%E0%AA%B8%E0%AA%AA%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%9F+%E0%AA%B8%E0%AA%B9%E0%AA%BE%E0%AA%AF+%E0%AA%9C%E0%AB%8B%E0%AA%88%E0%AA%8F+%E0%AA%9B%E0%AB%87." target="_blank" style="display:flex;align-items:center;gap:8px;font-size:12px;color:#10b981;font-weight:700;padding:6px 10px;border-radius:8px;background:rgba(16,185,129,0.08);text-decoration:none;border:1px solid rgba(16,185,129,0.2);">
+        <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i> WhatsApp: 9016305029
+      </a>
+      <a href="logout.php"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> લૉગ આઉટ</a>
+    </div>
+  </aside>
+  
+  <div class="main-area">
+
+    <!-- ══ Mobile Top Bar ══ -->
+    <div class="mobile-topbar">
+      <a href="?page=dashboard" class="m-brand" title="વર્ગ મેનેજમેન્ટ (Class Management)">
+        <div class="m-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+        <span class="m-title">વર્ગ મેનેજમેન્ટ (Class Management)</span>
+      </a>
+            <div style="display:flex;align-items:center;gap:8px;">
+        <a href="wallet.php" class="m-wallet-btn" title="મારું વૉલેટ: ₹0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+          <span>₹0</span>
+        </a>
+        <button type="button" class="m-notif-btn" onclick="openNotifModal()" title="સૂચનાઓ" style="position:relative;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#ffffff;border:1px solid #e2e8f0;color:#334155;cursor:pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  </button>
+        <button type="button" class="btn-theme-toggle btn-premium-theme m-theme-btn" onclick="toggleGlobalThemeMode()" title="ડાર્ક / લાઈટ મોડ (Dark / Light Theme)" aria-label="Theme Toggle">
+          <span class="theme-orb">
+            <span class="icon-moon" style="display:inline-flex;align-items:center;justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+                <defs>
+                  <linearGradient id="lunarBodyMob" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#a78bfa"/>
+                    <stop offset="35%" stop-color="#818cf8"/>
+                    <stop offset="70%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#4338ca"/>
+                  </linearGradient>
+                  <radialGradient id="lunarHighlightMob" cx="30%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+                    <stop offset="50%" stop-color="#c4b5fd" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                  </radialGradient>
+                  <linearGradient id="starGlowMob" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="30%" stop-color="#fef08a"/>
+                    <stop offset="70%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#d97706"/>
+                  </linearGradient>
+                  <filter id="premGlowMob" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#6366f1" flood-opacity="0.45"/>
+                  </filter>
+                </defs>
+                <path d="M21 13.5C20.3 18.2 16.2 21.8 11.3 21.8C5.6 21.8 1 17.2 1 11.5C1 6.6 4.6 2.5 9.3 1.8C8.5 3.3 8 5 8 6.8C8 12.3 12.5 16.8 18 16.8C19.8 16.8 21.5 16.3 21 13.5Z" fill="url(#lunarBodyMob)" filter="url(#premGlowMob)"/>
+                <path d="M21 13.5C20.3 18.2 16.2 21.8 11.3 21.8C5.6 21.8 1 17.2 1 11.5C1 6.6 4.6 2.5 9.3 1.8C8.5 3.3 8 5 8 6.8C8 12.3 12.5 16.8 18 16.8C19.8 16.8 21.5 16.3 21 13.5Z" fill="url(#lunarHighlightMob)"/>
+                <circle cx="8" cy="12" r="1.5" fill="#3730a3" fill-opacity="0.35"/>
+                <circle cx="12" cy="16.5" r="1.2" fill="#3730a3" fill-opacity="0.3"/>
+                <circle cx="6" cy="7.5" r="1" fill="#3730a3" fill-opacity="0.25"/>
+                <path d="M19 2.5L19.7 5.3L22.5 6L19.7 6.7L19 9.5L18.3 6.7L15.5 6L18.3 5.3L19 2.5Z" fill="url(#starGlowMob)"/>
+                <circle cx="19" cy="6" r="0.75" fill="#ffffff"/>
+                <path d="M13 1L13.4 2.1L14.5 2.5L13.4 2.9L13 4L12.6 2.9L11.5 2.5L12.6 2.1L13 1Z" fill="url(#starGlowMob)"/>
+                <circle cx="21" cy="11" r="0.65" fill="#fde047"/>
+              </svg>
+            </span>
+            <span class="icon-sun" style="display:none;align-items:center;justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+                <defs>
+                  <radialGradient id="solarSphereMob" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="55%" stop-color="#f59e0b"/>
+                    <stop offset="85%" stop-color="#ea580c"/>
+                    <stop offset="100%" stop-color="#c2410c"/>
+                  </radialGradient>
+                  <linearGradient id="rayGradMob" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fef08a"/>
+                    <stop offset="50%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#ea580c"/>
+                  </linearGradient>
+                  <filter id="solarGlowMob" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#f59e0b" flood-opacity="0.45"/>
+                  </filter>
+                </defs>
+                <path d="M12 1L13.1 3.5C12.8 3.7 12.4 3.8 12 3.8C11.6 3.8 11.2 3.7 10.9 3.5L12 1Z" fill="url(#rayGradMob)"/>
+                <path d="M12 23L10.9 20.5C11.2 20.3 11.6 20.2 12 20.2C12.4 20.2 12.8 20.3 13.1 20.5L12 23Z" fill="url(#rayGradMob)"/>
+                <path d="M1 12L3.5 10.9C3.7 11.2 3.8 11.6 3.8 12C3.8 12.4 3.7 12.8 3.5 13.1L1 12Z" fill="url(#rayGradMob)"/>
+                <path d="M23 12L20.5 13.1C20.3 12.8 20.2 12.4 20.2 12C20.2 11.6 20.3 11.2 20.5 10.9L23 12Z" fill="url(#rayGradMob)"/>
+                <path d="M19.78 4.22L17.8 6.5C17.5 6.2 17.2 6 16.8 5.8L19.78 4.22Z" fill="url(#rayGradMob)"/>
+                <path d="M4.22 19.78L6.2 17.5C6.5 17.8 6.8 18 7.2 18.2L4.22 19.78Z" fill="url(#rayGradMob)"/>
+                <path d="M4.22 4.22L6.5 6.2C6.2 6.5 6 6.8 5.8 7.2L4.22 4.22Z" fill="url(#rayGradMob)"/>
+                <path d="M19.78 19.78L17.5 17.8C17.8 17.5 18 17.2 18.2 16.8L19.78 19.78Z" fill="url(#rayGradMob)"/>
+                <circle cx="12" cy="12" r="5.5" fill="url(#solarSphereMob)" filter="url(#solarGlowMob)"/>
+                <ellipse cx="10" cy="9.5" rx="2" ry="1.2" transform="rotate(-30 10 9.5)" fill="#ffffff" fill-opacity="0.55"/>
+              </svg>
+            </span>
+          </span>
+        </button>
+        <button class="m-menu-btn" onclick="toggleDrawer()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>        </button>
+      </div>
+          </div>
+
+    <!-- ══ Desktop Top Bar ══ -->
+        <header class="topbar">
+      <div class="topbar-left">
+                  <span class="badge-emerald" style="font-size:11px; padding:3px 9px;">શાળા પોર્ટલ</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="width:14px;height:14px"><polyline points="9 18 15 12 9 6"/></svg>
+        <h1 class="topbar-title">વર્ગ મેનેજમેન્ટ (Class Management)</h1>
+      </div>
+      <div class="topbar-right">
+                  <span style="font-size:12px; font-weight:600; color:var(--slate-500); display:none; @media(min-width:1200px){display:inline;}" class="hidden xl:inline">
+            શ્રી દેશોત્તર પ્રાથમિક ...          </span>
+        
+        <!-- Notification Bell Button -->
+        <button type="button" class="btn-notif-trigger" onclick="openNotifModal()" title="સૂચનાઓ & જાહેરાતો" style="position:relative;width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:#ffffff;border:1.5px solid #e2e8f0;cursor:pointer;color:#334155;transition:all 0.15s ease;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#3b82f6';this.style.color='#1d4ed8';" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#334155';">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  </button>
+
+                <a href="?page=settings" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;color:#0f172a;background:#ffffff;border:1.5px solid #e2e8f0;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all 0.15s ease;" onmouseover="this.style.borderColor='#4f46e5'" onmouseout="this.style.borderColor='#e2e8f0'" title="સિસ્ટમ સેટિંગ્સ & કંટ્રોલ">
+          <span style="display:flex;color:#4f46e5;"><svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+          <span>સેટિંગ્સ</span>
+        </a>
+
+        <a href="my-account.php" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;color:#0f172a;background:#ffffff;border:1.5px solid #e2e8f0;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all 0.15s ease;" onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='#e2e8f0'" title="મારું એકાઉન્ટ & પાસવર્ડ">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>એકાઉન્ટ</span>
+        </a>
+        
+        <!-- ══ Wallet Button in Desktop Topbar ══ -->
+                <a href="wallet.php" class="topbar-wallet-btn" title="મારું વૉલેટ & રેફરલ કમાણી">
+          <span class="wallet-icon-orb">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+          </span>
+          <span style="display:flex;flex-direction:column;line-height:1.15;text-align:left;">
+            <span style="font-size:9.5px;font-weight:700;color:var(--slate-400);letter-spacing:0.02em;">વૉલેટ</span>
+            <span class="wallet-amount-pill">₹0</span>
+          </span>
+          <span class="wallet-tag-earn">કમાઓ</span>
+        </a>
+        
+        <!-- ══ Dark Mode Toggle Button (Replaces Date in Header) ══ -->
+        <button type="button" class="btn-theme-toggle btn-premium-theme" onclick="toggleGlobalThemeMode()" title="ડાર્ક / લાઈટ મોડ (Dark / Light Theme)" aria-label="Theme Toggle">
+          <span class="theme-orb">
+            <span class="icon-moon" style="display:inline-flex;align-items:center;justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+                <defs>
+                  <linearGradient id="lunarBodyDesk" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#a78bfa"/>
+                    <stop offset="35%" stop-color="#818cf8"/>
+                    <stop offset="70%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#4338ca"/>
+                  </linearGradient>
+                  <radialGradient id="lunarHighlightDesk" cx="30%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+                    <stop offset="50%" stop-color="#c4b5fd" stop-opacity="0.2"/>
+                    <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                  </radialGradient>
+                  <linearGradient id="starGlowDesk" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="30%" stop-color="#fef08a"/>
+                    <stop offset="70%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#d97706"/>
+                  </linearGradient>
+                  <filter id="premGlowDesk" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#6366f1" flood-opacity="0.45"/>
+                  </filter>
+                </defs>
+                <path d="M21 13.5C20.3 18.2 16.2 21.8 11.3 21.8C5.6 21.8 1 17.2 1 11.5C1 6.6 4.6 2.5 9.3 1.8C8.5 3.3 8 5 8 6.8C8 12.3 12.5 16.8 18 16.8C19.8 16.8 21.5 16.3 21 13.5Z" fill="url(#lunarBodyDesk)" filter="url(#premGlowDesk)"/>
+                <path d="M21 13.5C20.3 18.2 16.2 21.8 11.3 21.8C5.6 21.8 1 17.2 1 11.5C1 6.6 4.6 2.5 9.3 1.8C8.5 3.3 8 5 8 6.8C8 12.3 12.5 16.8 18 16.8C19.8 16.8 21.5 16.3 21 13.5Z" fill="url(#lunarHighlightDesk)"/>
+                <circle cx="8" cy="12" r="1.5" fill="#3730a3" fill-opacity="0.35"/>
+                <circle cx="12" cy="16.5" r="1.2" fill="#3730a3" fill-opacity="0.3"/>
+                <circle cx="6" cy="7.5" r="1" fill="#3730a3" fill-opacity="0.25"/>
+                <path d="M19 2.5L19.7 5.3L22.5 6L19.7 6.7L19 9.5L18.3 6.7L15.5 6L18.3 5.3L19 2.5Z" fill="url(#starGlowDesk)"/>
+                <circle cx="19" cy="6" r="0.75" fill="#ffffff"/>
+                <path d="M13 1L13.4 2.1L14.5 2.5L13.4 2.9L13 4L12.6 2.9L11.5 2.5L12.6 2.1L13 1Z" fill="url(#starGlowDesk)"/>
+                <circle cx="21" cy="11" r="0.65" fill="#fde047"/>
+              </svg>
+            </span>
+            <span class="icon-sun" style="display:none;align-items:center;justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
+                <defs>
+                  <radialGradient id="solarSphereDesk" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#fffbeb"/>
+                    <stop offset="25%" stop-color="#fde047"/>
+                    <stop offset="55%" stop-color="#f59e0b"/>
+                    <stop offset="85%" stop-color="#ea580c"/>
+                    <stop offset="100%" stop-color="#c2410c"/>
+                  </radialGradient>
+                  <linearGradient id="rayGradDesk" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fef08a"/>
+                    <stop offset="50%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#ea580c"/>
+                  </linearGradient>
+                  <filter id="solarGlowDesk" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#f59e0b" flood-opacity="0.45"/>
+                  </filter>
+                </defs>
+                <path d="M12 1L13.1 3.5C12.8 3.7 12.4 3.8 12 3.8C11.6 3.8 11.2 3.7 10.9 3.5L12 1Z" fill="url(#rayGradDesk)"/>
+                <path d="M12 23L10.9 20.5C11.2 20.3 11.6 20.2 12 20.2C12.4 20.2 12.8 20.3 13.1 20.5L12 23Z" fill="url(#rayGradDesk)"/>
+                <path d="M1 12L3.5 10.9C3.7 11.2 3.8 11.6 3.8 12C3.8 12.4 3.7 12.8 3.5 13.1L1 12Z" fill="url(#rayGradDesk)"/>
+                <path d="M23 12L20.5 13.1C20.3 12.8 20.2 12.4 20.2 12C20.2 11.6 20.3 11.2 20.5 10.9L23 12Z" fill="url(#rayGradDesk)"/>
+                <path d="M19.78 4.22L17.8 6.5C17.5 6.2 17.2 6 16.8 5.8L19.78 4.22Z" fill="url(#rayGradDesk)"/>
+                <path d="M4.22 19.78L6.2 17.5C6.5 17.8 6.8 18 7.2 18.2L4.22 19.78Z" fill="url(#rayGradDesk)"/>
+                <path d="M4.22 4.22L6.5 6.2C6.2 6.5 6 6.8 5.8 7.2L4.22 4.22Z" fill="url(#rayGradDesk)"/>
+                <path d="M19.78 19.78L17.5 17.8C17.8 17.5 18 17.2 18.2 16.8L19.78 19.78Z" fill="url(#rayGradDesk)"/>
+                <circle cx="12" cy="12" r="5.5" fill="url(#solarSphereDesk)" filter="url(#solarGlowDesk)"/>
+                <ellipse cx="10" cy="9.5" rx="2" ry="1.2" transform="rotate(-30 10 9.5)" fill="#ffffff" fill-opacity="0.55"/>
+              </svg>
+            </span>
+          </span>
+          <span class="theme-text">ડાર્ક મોડ</span>
+        </button>
+        <a href="my-subscription.php" class="topbar-badge badge-active" style="display:inline-flex;align-items:center;gap:7px;" title="સબ્સ્ક્રિપ્શન પ્લાન">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" style="flex-shrink:0;">
+              <defs>
+                <linearGradient id="crownGradHdr" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fef08a"/>
+                  <stop offset="40%" stop-color="#f59e0b"/>
+                  <stop offset="100%" stop-color="#d97706"/>
+                </linearGradient>
+                <filter id="crownGlowHdr" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#f59e0b" flood-opacity="0.5"/>
+                </filter>
+              </defs>
+              <path d="M2 17L4 7L8.5 11.5L12 4L15.5 11.5L20 7L22 17H2Z" fill="url(#crownGradHdr)" filter="url(#crownGlowHdr)"/>
+              <rect x="2" y="18" width="20" height="2.5" rx="1" fill="url(#crownGradHdr)"/>
+              <circle cx="12" cy="4" r="1.3" fill="#ffffff"/>
+              <circle cx="4" cy="7" r="1.1" fill="#ffffff"/>
+              <circle cx="20" cy="7" r="1.1" fill="#ffffff"/>
+            </svg>
+            <span class="pulse-dot emerald"></span>
+            <span>Active Plan</span>
+                  </a>
+      </div>
+    </header>
+
+    <!-- Notification Modal / Slide-down -->
+    <div id="schoolNotifModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(15,23,42,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;">
+      <div style="background:#ffffff;border-radius:20px;max-width:540px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 60px -15px rgba(0,0,0,0.3);overflow:hidden;border:1px solid #e2e8f0;">
+        <div style="padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:#e0f2fe;color:#0284c7;display:flex;align-items:center;justify-content:center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div>
+              <div style="font-size:16px;font-weight:800;color:#0f172a;">સૂચના & જાહેરાત કેન્દ્ર</div>
+              <div style="font-size:12px;color:#64748b;" id="notifSubheadText">
+                કોઈ નવી સૂચના નથી              </div>
+            </div>
+          </div>
+          <button type="button" onclick="closeNotifModal()" style="width:32px;height:32px;border-radius:8px;border:none;background:#e2e8f0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#475569;" onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div style="overflow-y:auto;padding:18px 22px;flex:1;display:flex;flex-direction:column;gap:14px;" id="notifListContainer">
+                      <div style="text-align:center;padding:36px 16px;color:#64748b;">
+              <div style="width:52px;height:52px;border-radius:50%;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px;height:24px;"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="font-weight:700;font-size:15px;color:#0f172a;">બધી સૂચનાઓ વંચાઈ ગઈ છે!</div>
+              <div style="font-size:13px;margin-top:4px;">તમારી શાળા માટે હાલ કોઈ નવી અગત્યની સૂચના બાકી નથી.</div>
+            </div>
+                  </div>
+
+              </div>
+    </div>
+
+    <style>
+    @keyframes notifPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    </style>
+
+    <script>
+    function openNotifModal() {
+      const m = document.getElementById('schoolNotifModal');
+      if (m) {
+        m.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeNotifModal() {
+      const m = document.getElementById('schoolNotifModal');
+      if (m) {
+        m.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeNotifModal();
+    });
+    if (document.getElementById('schoolNotifModal')) {
+      document.getElementById('schoolNotifModal').addEventListener('click', function(e) {
+        if (e.target === this) closeNotifModal();
+      });
+    }
+
+    function updateNotifBadges(remaining) {
+      const badges = document.querySelectorAll('.notif-badge-pill');
+      if (remaining <= 0) {
+        badges.forEach(b => b.remove());
+        const sub = document.getElementById('notifSubheadText');
+        if (sub) sub.textContent = 'કોઈ નવી સૂચના નથી';
+        const ftr = document.getElementById('notifFooterAction');
+        if (ftr) ftr.remove();
+        const cnt = document.getElementById('notifListContainer');
+        if (cnt) {
+          cnt.innerHTML = `
+            <div style="text-align:center;padding:36px 16px;color:#64748b;">
+              <div style="width:52px;height:52px;border-radius:50%;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:24px;height:24px;"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="font-weight:700;font-size:15px;color:#0f172a;">બધી સૂચનાઓ વંચાઈ ગઈ છે!</div>
+              <div style="font-size:13px;margin-top:4px;">તમારી શાળા માટે હાલ કોઈ નવી અગત્યની સૂચના બાકી નથી.</div>
+            </div>`;
+        }
+        // Also remove dashboard notification banners if present
+        const dashBanners = document.querySelectorAll('.dash-notif-banner');
+        dashBanners.forEach(b => b.remove());
+      } else {
+        badges.forEach(b => b.textContent = remaining);
+        const sub = document.getElementById('notifSubheadText');
+        if (sub) sub.textContent = 'તમારી શાળા માટે ' + remaining + ' નવી સૂચના(ઓ) ઉપલબ્ધ છે';
+      }
+    }
+
+    function markSingleNotifRead(id) {
+      const card = document.getElementById('notif_card_' + id);
+      const dashCard = document.getElementById('dash_notif_' + id);
+      if (card) card.style.opacity = '0.4';
+      if (dashCard) dashCard.style.opacity = '0.4';
+
+      const formData = new FormData();
+      formData.append('action', 'mark_read');
+      formData.append('notification_id', id);
+      formData.append('ajax', '1');
+
+      fetch('notification-action.php', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          if (card) {
+            card.style.transform = 'scale(0.95)';
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 250);
+          }
+          if (dashCard) {
+            dashCard.style.transform = 'scale(0.95)';
+            dashCard.style.opacity = '0';
+            setTimeout(() => dashCard.remove(), 250);
+          }
+          updateNotifBadges(data.remaining_unread);
+        }
+      })
+      .catch(err => console.error(err));
+    }
+
+    function markAllNotifsRead() {
+      const formData = new FormData();
+      formData.append('action', 'mark_all_read');
+      formData.append('ajax', '1');
+
+      fetch('notification-action.php', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          updateNotifBadges(0);
+        }
+      })
+      .catch(err => console.error(err));
+    }
+    </script>
+    
+    <!-- Content -->
+    <main class="content-wrap">
+
+<style>
+/* Modern Class Management Styles */
+.class-hero {
+  background: linear-gradient(135deg, #091322 0%, #0d233a 50%, #064e3b 100%);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+.class-hero::after {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+.class-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.class-metric-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.class-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+.class-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.class-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  margin-bottom: 30px;
+}
+.class-item-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.class-item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+.class-card-header {
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.class-std-badge {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.class-section-chip {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 9px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+}
+.class-card-body {
+  padding: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.class-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.class-info-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  flex-shrink: 0;
+}
+.class-info-content {
+  flex: 1;
+  min-width: 0;
+}
+.class-info-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+.class-info-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  word-break: break-word;
+}
+.class-stat-pill-bar {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+.class-card-footer {
+  padding: 12px 18px;
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-action-sm {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-backdrop.active {
+  display: flex;
+}
+.modal-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
+  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<div class="content-container">
+
+  <!-- Alerts -->
+  
+  
+  <!-- Hero Header -->
+  <div class="class-hero">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M7 8h10M7 12h6"/></svg>
+            વર્ગ વ્યવસ્થાપન મોડ્યુલ
+          </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">વર્ગ મેનેજમેન્ટ (Class Management)</h1>
+        <p class="text-sm text-slate-300 mt-1 max-w-xl">
+          શાળાના ધોરણ/વર્ગ બનાવો, વર્ગશિક્ષક ફાળવો, પરિણામ જાહેર કરવાની તારીખ સેટ કરો અને વિદ્યાર્થી પ્રગતિ મોનિટર કરો.
+        </p>
+      </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+        <button type="button" onclick="openAddModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          નવો વર્ગ ઉમેરો
+        </button>
+
+        <button type="button" onclick="openBulkDateModal()" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 backdrop-blur transition-all flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          પરિણામ તારીખ
+        </button>
+
+        <form method="POST" onsubmit="return confirm('હાલના વિદ્યાર્થીઓના ધોરણ અને વર્ગ પરથી બાકી રહેલા વર્ગો આપોઆપ સેટ કરવા માંગો છો?');" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+          <input type="hidden" name="action" value="auto_detect">
+          <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold text-sm border border-blue-400/30 backdrop-blur transition-all flex items-center gap-2" title="વિદ્યાર્થી ડેટા પરથી વર્ગો લાવો">
+            <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            ઓટો-ઇમ્પોર્ટ
+          </button>
+        </form>
+      </div>
+          </div>
+  </div>
+
+  <!-- Summary Metric Cards -->
+    <div class="class-metric-grid">
+    <div class="class-metric-card">
+      <div class="class-metric-icon bg-emerald-50 text-emerald-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-slate-500">કુલ વર્ગો</div>
+        <div class="text-xl font-black text-slate-900">10</div>
+      </div>
+    </div>
+
+    <div class="class-metric-card">
+      <div class="class-metric-icon bg-blue-50 text-blue-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-slate-500">વર્ગશિક્ષક ફાળવેલ</div>
+        <div class="text-xl font-black text-slate-900">10 <span class="text-xs font-normal text-slate-400">/ 10</span></div>
+      </div>
+    </div>
+
+    <div class="class-metric-card">
+      <div class="class-metric-icon bg-purple-50 text-purple-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-slate-500">પરિણામ તારીખ સેટ</div>
+        <div class="text-xl font-black text-slate-900">0 <span class="text-xs font-normal text-slate-400">/ 10</span></div>
+      </div>
+    </div>
+
+    <div class="class-metric-card">
+      <div class="class-metric-icon bg-amber-50 text-amber-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-slate-500">કુલ વિદ્યાર્થીઓ</div>
+        <div class="text-xl font-black text-slate-900">304</div>
+                  <div class="text-[11px] font-semibold text-slate-500 mt-0.5">
+            <span class="text-blue-600 font-bold">કુમાર: 157</span> • <span class="text-pink-600 font-bold">કન્યા: 147</span>
+          </div>
+              </div>
+    </div>
+  </div>
+  
+  <!-- Class Grid or Empty State -->
+  
+    <div class="class-card-grid">
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>બાલવાટિકા</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                3              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">મંદાકિનીબહેન પુરુષોત્તમદાસ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9428118317</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> patelmanda1203@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">30</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">15</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">15</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=0&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=0&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:4809,&quot;tenant_id&quot;:188,&quot;standard&quot;:0,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0aae\u0a82\u0aa6\u0abe\u0a95\u0abf\u0aa8\u0ac0\u0aac\u0ab9\u0ac7\u0aa8 \u0aaa\u0ac1\u0ab0\u0ac1\u0ab7\u0acb\u0aa4\u0acd\u0aa4\u0aae\u0aa6\u0abe\u0ab8 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9428118317&quot;,&quot;teacher_email&quot;:&quot;patelmanda1203@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$bdLGpCdzbUbfYtwHcXdaP.fhEUn1n\/OgsDEpbryPulzOedy4ZjX42&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;3&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-10-13 14:15:54&quot;,&quot;updated_at&quot;:&quot;2026-10-13 14:15:54&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર બાલવાટિકા - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="4809">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 1</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                1              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">જીતેન્દ્રકુમાર ડાહ્યાલાલ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9426890919</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> pateljitu8173@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">30</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">15</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">15</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=1&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=1&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:361,&quot;tenant_id&quot;:188,&quot;standard&quot;:1,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0a9c\u0ac0\u0aa4\u0ac7\u0aa8\u0acd\u0aa6\u0acd\u0ab0\u0a95\u0ac1\u0aae\u0abe\u0ab0 \u0aa1\u0abe\u0ab9\u0acd\u0aaf\u0abe\u0ab2\u0abe\u0ab2 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9426890919&quot;,&quot;teacher_email&quot;:&quot;pateljitu8173@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$wa\/Xd4vqHk6eKOZI4SvDEussMhIaYfpawAsfRCMF9pACZyuCtr8BS&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;1&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:00:03&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:00:03&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 1 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="361">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 2</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                5              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">મીનાબહેન જિતાલાલ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9909842238</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> patelmeena87696@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">42</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">22</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">20</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=2&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=2&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:371,&quot;tenant_id&quot;:188,&quot;standard&quot;:2,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0aae\u0ac0\u0aa8\u0abe\u0aac\u0ab9\u0ac7\u0aa8 \u0a9c\u0abf\u0aa4\u0abe\u0ab2\u0abe\u0ab2 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9909842238&quot;,&quot;teacher_email&quot;:&quot;patelmeena87696@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$xTBrdcGsYYiXz1tAa3d5q.uXG8d4R5Iy.kkJ20Zc2GDZrN8DoPcsa&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;5&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:19:58&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:19:58&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 2 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="371">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 3</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                6              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">નવીનચંદ્ર બહેચરભાઈ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9913034993</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> navinbhai5556@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">38</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">19</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">19</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=3&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=3&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:370,&quot;tenant_id&quot;:188,&quot;standard&quot;:3,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0aa8\u0ab5\u0ac0\u0aa8\u0a9a\u0a82\u0aa6\u0acd\u0ab0 \u0aac\u0ab9\u0ac7\u0a9a\u0ab0\u0aad\u0abe\u0a88 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9913034993&quot;,&quot;teacher_email&quot;:&quot;navinbhai5556@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$ee.FJy67m1pPXKeSlZlrQeGv.TxUAV0SqbLA50oNxK0JgM2UlUVva&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;6&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:18:25&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:18:25&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 3 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="370">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 4</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                6              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">નવીનચંદ્ર બહેચરભાઈ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9913034993</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> navinbhai5556@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">6</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">4</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=4&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=4&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:369,&quot;tenant_id&quot;:188,&quot;standard&quot;:4,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0aa8\u0ab5\u0ac0\u0aa8\u0a9a\u0a82\u0aa6\u0acd\u0ab0 \u0aac\u0ab9\u0ac7\u0a9a\u0ab0\u0aad\u0abe\u0a88 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9913034993&quot;,&quot;teacher_email&quot;:&quot;navinbhai5556@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$jl8dhkKepuPCePbiMkz6Z.aoiGDlZtJ3xRyNaVwzNScWETVEs6Tp6&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;6&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:16:47&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:16:47&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 4 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="369">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 5</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                11              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">હરેશકુમાર અંબાલાલ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9913387707</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> hareshpatelin8@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">29</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">12</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">17</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=5&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=5&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:368,&quot;tenant_id&quot;:188,&quot;standard&quot;:5,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0ab9\u0ab0\u0ac7\u0ab6\u0a95\u0ac1\u0aae\u0abe\u0ab0 \u0a85\u0a82\u0aac\u0abe\u0ab2\u0abe\u0ab2 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9913387707&quot;,&quot;teacher_email&quot;:&quot;hareshpatelin8@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$39pPG5b2p1x.ZducXI8d7uU12QJxdqjMp2wl.z5CmlbgeGuloHM3q&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;11&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:13:23&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:13:23&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 5 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="368">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 6</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                7              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">ચેતનાબેન રાંમાભાઈ વણકર</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9727716614</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> chetanavankar2511@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">24</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">13</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">11</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=6&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=6&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:364,&quot;tenant_id&quot;:188,&quot;standard&quot;:6,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0a9a\u0ac7\u0aa4\u0aa8\u0abe\u0aac\u0ac7\u0aa8 \u0ab0\u0abe\u0a82\u0aae\u0abe\u0aad\u0abe\u0a88 \u0ab5\u0aa3\u0a95\u0ab0&quot;,&quot;teacher_phone&quot;:&quot;9727716614&quot;,&quot;teacher_email&quot;:&quot;chetanavankar2511@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$HHyeOmiCpsHFT19fIAHdX.PkUf97Bt65ilAacCvQ.FUivpctqJw5W&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;7&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:07:58&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:07:58&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 6 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="364">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 6</span>
+              <span class="class-section-chip">વર્ગ B</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                4              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">કલ્પનાબહેન કાળાભાઇ સોલંકી</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9624301177</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> kksolanki1212@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">24</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">15</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">9</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=6&section=B" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=6&section=B" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:367,&quot;tenant_id&quot;:188,&quot;standard&quot;:6,&quot;section&quot;:&quot;B&quot;,&quot;class_teacher&quot;:&quot;\u0a95\u0ab2\u0acd\u0aaa\u0aa8\u0abe\u0aac\u0ab9\u0ac7\u0aa8 \u0a95\u0abe\u0ab3\u0abe\u0aad\u0abe\u0a87 \u0ab8\u0acb\u0ab2\u0a82\u0a95\u0ac0&quot;,&quot;teacher_phone&quot;:&quot;9624301177&quot;,&quot;teacher_email&quot;:&quot;kksolanki1212@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$Ry66yZQSzofbke6446vUCOt86U5MqnL5jYrLJrIREQBHRMXX4.mFm&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;4&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:11:29&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:11:29&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 6 - B વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="367">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 7</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                8              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">શિલ્પાબહેન ચંદુભાઈ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9737313353</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> vandan.jp.123@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">41</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">25</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">16</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=7&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=7&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:363,&quot;tenant_id&quot;:188,&quot;standard&quot;:7,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0ab6\u0abf\u0ab2\u0acd\u0aaa\u0abe\u0aac\u0ab9\u0ac7\u0aa8 \u0a9a\u0a82\u0aa6\u0ac1\u0aad\u0abe\u0a88 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9737313353&quot;,&quot;teacher_email&quot;:&quot;vandan.jp.123@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$wHfSDwWb55P1c27hzCHvLeYrQgrXdryfzE8c29qqDLSmwj7vCv4gu&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;8&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:04:32&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:04:32&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 7 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="363">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+              <div class="class-item-card">
+          <!-- Card Header -->
+          <div class="class-card-header">
+            <div class="class-std-badge">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span>ધોરણ 8</span>
+              <span class="class-section-chip">વર્ગ A</span>
+            </div>
+                          <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
+                9              </span>
+                      </div>
+
+          <!-- Card Body -->
+          <div class="class-card-body">
+            <!-- Class Teacher -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">વર્ગ શિક્ષક (Class Teacher)</div>
+                <div class="class-info-value">
+                                      <span class="font-bold text-slate-800">હેમાંગીબેન જયરજભાઈ પટેલ</span>
+                    <div class="text-xs text-slate-500 font-normal mt-1 flex flex-wrap items-center gap-2">
+                                              <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[11.5px]" title="મોબાઇલ નંબર"><i class="fa-solid fa-phone text-slate-400 text-[10px]"></i> 9428341499</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11.5px]" title="ઇમેઇલ"><i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i> hemangipatel5990@gmail.com</span>
+                                                                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-200/80" title="શિક્ષક લૉગિન સક્રિય છે"><i class="fa-solid fa-key text-emerald-600 text-[10px]"></i> લૉગિન સક્રિય</span>
+                                          </div>
+                                  </div>
+              </div>
+            </div>
+
+            <!-- Result Dates (Satrant & Varshik) -->
+            <div class="class-info-row">
+              <div class="class-info-icon">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="class-info-content">
+                <div class="class-info-label">પરિણામ તારીખો (Result Dates)</div>
+                <div class="space-y-1.5 mt-1">
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                      સત્રાંત:
+                    </span>
+                                          <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                  <div class="flex items-center justify-between gap-2 text-xs bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                    <span class="text-slate-600 font-medium flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      વાર્ષિક:
+                    </span>
+                                                              <span class="text-slate-400 font-normal text-[11px]">નક્કી થયેલ નથી</span>
+                                      </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Counts -->
+            <div class="class-stat-pill-bar">
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુલ સંખ્યા</div>
+                <div class="text-sm font-black text-slate-900">40</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કુમાર (M)</div>
+                <div class="text-sm font-bold text-blue-600">17</div>
+              </div>
+              <div style="width:1px; height:20px; background:#e2e8f0;"></div>
+              <div>
+                <div class="text-[11px] font-semibold text-slate-500">કન્યા (F)</div>
+                <div class="text-sm font-bold text-pink-600">23</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="class-card-footer">
+            <div class="flex items-center gap-1.5">
+              <a href="?page=students" class="btn-action-sm bg-slate-100 hover:bg-slate-200 text-slate-700" title="વિદ્યાર્થી યાદી જુઓ">
+                વિદ્યાર્થી
+              </a>
+              <a href="marks.php?standard=8&section=A" class="btn-action-sm bg-blue-50 hover:bg-blue-100 text-blue-700" title="ગુણ એન્ટ્રી કરો">
+                ગુણ
+              </a>
+              <a href="patrak_f.php?standard=8&section=A" class="btn-action-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700" title="પત્રક F (પ્રગતિ પત્રક) જુઓ">
+                પત્રક F
+              </a>
+                              <a href="patrak_g.php?standard=8&section=A" class="btn-action-sm bg-rose-50 hover:bg-rose-100 text-rose-700" title="પત્રક G (શાળાંત પ્રમાણપત્ર) જુઓ">
+                  પત્રક G
+                </a>
+                          </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openEditModal({&quot;id&quot;:362,&quot;tenant_id&quot;:188,&quot;standard&quot;:8,&quot;section&quot;:&quot;A&quot;,&quot;class_teacher&quot;:&quot;\u0ab9\u0ac7\u0aae\u0abe\u0a82\u0a97\u0ac0\u0aac\u0ac7\u0aa8 \u0a9c\u0aaf\u0ab0\u0a9c\u0aad\u0abe\u0a88 \u0aaa\u0a9f\u0ac7\u0ab2&quot;,&quot;teacher_phone&quot;:&quot;9428341499&quot;,&quot;teacher_email&quot;:&quot;hemangipatel5990@gmail.com&quot;,&quot;teacher_password_hash&quot;:&quot;$2y$10$8UICQZ5TraZac3lQMeL4B.ASzqm4TbvI9Ht2SDjuJJtowDs0.H8..&quot;,&quot;teacher_can_login&quot;:1,&quot;result_date&quot;:null,&quot;result_date_satrant&quot;:null,&quot;result_date_varshik&quot;:null,&quot;academic_year&quot;:&quot;2026-27&quot;,&quot;room_no&quot;:&quot;9&quot;,&quot;notes&quot;:null,&quot;created_at&quot;:&quot;2026-09-19 11:02:25&quot;,&quot;updated_at&quot;:&quot;2026-09-19 11:02:25&quot;})" class="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all" title="વર્ગ વિગત સુધારો">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+
+                            <form method="POST" onsubmit="return confirm('શું તમે ખરેખર ધોરણ 8 - A વર્ગ કાઢી નાખવા માંગો છો? (વિદ્યાર્થી ડેટા સુરક્ષિત રહેશે)');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+                <input type="hidden" name="action" value="delete_class">
+                <input type="hidden" name="id" value="362">
+                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all" title="વર્ગ ડિલીટ કરો">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </form>
+                          </div>
+          </div>
+        </div>
+          </div>
+
+  
+</div>
+
+<!-- ══ MODAL 1: ADD NEW CLASS ══ -->
+<div id="addModal" class="modal-backdrop">
+  <div class="modal-panel" style="max-width: 580px;">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">નવો વર્ગ ઉમેરો (Add New Class)</h3>
+      </div>
+      <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+    </div>
+
+    <form method="POST" class="p-6 space-y-4">
+      <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+      <input type="hidden" name="action" value="create_class">
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="label-sm">ધોરણ (Standard) *</label>
+          <select name="standard" required class="input-field" style="padding:9px 12px; font-size:13.5px;">
+            <option value="">-- પસંદ કરો --</option>
+                          <option value="0">બાલવાટિકા (Balvatika)</option>
+                          <option value="1">ધોરણ 1</option>
+                          <option value="2">ધોરણ 2</option>
+                          <option value="3">ધોરણ 3</option>
+                          <option value="4">ધોરણ 4</option>
+                          <option value="5">ધોરણ 5</option>
+                          <option value="6">ધોરણ 6</option>
+                          <option value="7">ધોરણ 7</option>
+                          <option value="8">ધોરણ 8</option>
+                      </select>
+        </div>
+
+        <div>
+          <label class="label-sm">વર્ગ/વિભાગ (Section) *</label>
+          <input type="text" name="section" value="A" required placeholder="A, B, C..." maxlength="5" class="input-field" style="padding:9px 12px; font-size:13.5px; text-transform:uppercase;">
+        </div>
+      </div>
+
+      <div>
+        <label class="label-sm">વર્ગશિક્ષકનું પૂરું નામ (Class Teacher Name)</label>
+        <input type="text" name="class_teacher" placeholder="દા.ત. શ્રી રમેશભાઈ એમ. પટેલ" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        <span class="text-[11px] text-slate-400">આ નામ પરિણામ પત્રકમાં વર્ગ શિક્ષકની સહી ઉપર આવશે.</span>
+      </div>
+
+      <!-- Teacher Credentials Section -->
+      <div class="p-4 rounded-xl bg-gradient-to-br from-indigo-50/70 via-blue-50/40 to-slate-50 border border-indigo-100 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-bold text-indigo-900 border-b border-indigo-100/80 pb-2">
+          <i class="fa-solid fa-user-shield text-indigo-600"></i>
+          <span>શિક્ષક સ્વતંત્ર લૉગિન વિગતો (Teacher Login Credentials)</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="label-sm text-slate-700">શિક્ષકનો મોબાઇલ નં</label>
+            <input type="tel" name="teacher_phone" id="add_teacher_phone" placeholder="9876543210" pattern="[0-9]{10}" maxlength="10" class="input-field bg-white" style="padding:8px 12px; font-size:13px;">
+          </div>
+          <div>
+            <label class="label-sm text-slate-700">શિક્ષક ઇમેઇલ (Email ID)</label>
+            <input type="email" name="teacher_email" id="add_teacher_email" placeholder="teacher@gmail.com" class="input-field bg-white" style="padding:8px 12px; font-size:13px;">
+          </div>
+        </div>
+
+        <div>
+          <label class="label-sm text-slate-700 flex items-center justify-between">
+            <span>શિક્ષક લૉગિન પાસવર્ડ (Password)</span>
+            <button type="button" onclick="generateTeacherPassword('add_teacher_password')" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> પાસવર્ડ જનરેટ કરો
+            </button>
+          </label>
+          <div class="relative">
+            <input type="password" name="teacher_password" id="add_teacher_password" placeholder="ઓછામાં ઓછા 6 અક્ષર (દા.ત. Teach@123)" class="input-field bg-white" style="padding:8px 38px 8px 12px; font-size:13px;">
+            <button type="button" onclick="togglePasswordVisibility('add_teacher_password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 text-xs">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" name="send_credentials" id="add_send_credentials" value="1" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+          <label for="add_send_credentials" class="text-xs font-semibold text-slate-700 cursor-pointer select-none">
+            લૉગિન વિગતો (ID અને પાસવર્ડ) શિક્ષકના ઇમેઇલ પર મોકલો
+          </label>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="label-sm">સત્રાંત પરિણામ તારીખ</label>
+          <input type="date" name="result_date_satrant" value="" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+
+        <div>
+          <label class="label-sm">વાર્ષિક પરિણામ તારીખ</label>
+          <input type="date" name="result_date_varshik" value="" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="label-sm">શૈક્ષણિક વર્ષ (Academic Year)</label>
+          <input type="text" name="academic_year" value="2026-27" placeholder="2026-27" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+
+        <div>
+          <label class="label-sm">ઓરડા નંબર (Room No / Block)</label>
+          <input type="text" name="room_no" placeholder="દા.ત. ઓરડો નં 3" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+        <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">
+          રદ કરો
+        </button>
+        <button type="submit" class="btn-emerald" style="padding:8px 18px; font-size:13.5px;">
+          સાચવો (Create Class)
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══ MODAL 2: EDIT CLASS ══ -->
+<div id="editModal" class="modal-backdrop">
+  <div class="modal-panel" style="max-width: 580px;">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <h3 class="text-base font-bold text-slate-900" id="editModalTitle">વર્ગ વિગત સુધારો</h3>
+      </div>
+      <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+    </div>
+
+    <form method="POST" class="p-6 space-y-4">
+      <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+      <input type="hidden" name="action" value="update_class">
+      <input type="hidden" name="id" id="edit_id" value="">
+
+      <div>
+        <label class="label-sm">વર્ગશિક્ષકનું પૂરું નામ (Class Teacher Name)</label>
+        <input type="text" name="class_teacher" id="edit_class_teacher" placeholder="દા.ત. શ્રી રમેશભાઈ પટેલ" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        <span class="text-[11px] text-slate-400">આ નામ પરિણામ પત્રકમાં વર્ગ શિક્ષકની સહી ઉપર આવશે.</span>
+      </div>
+
+            <!-- Teacher Credentials Section -->
+      <div class="p-4 rounded-xl bg-gradient-to-br from-indigo-50/70 via-blue-50/40 to-slate-50 border border-indigo-100 space-y-3">
+        <div class="flex items-center justify-between border-b border-indigo-100/80 pb-2">
+          <div class="flex items-center gap-2 text-xs font-bold text-indigo-900">
+            <i class="fa-solid fa-user-shield text-indigo-600"></i>
+            <span>શિક્ષક સ્વતંત્ર લૉગિન વિગતો (Teacher Login Credentials)</span>
+          </div>
+          <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+            <input type="checkbox" name="teacher_can_login" id="edit_teacher_can_login" value="1" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+            <span class="text-[11px] font-bold text-indigo-800">લૉગિન સક્રિય</span>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="label-sm text-slate-700">શિક્ષકનો મોબાઇલ નં</label>
+            <input type="tel" name="teacher_phone" id="edit_teacher_phone" placeholder="9876543210" pattern="[0-9]{10}" maxlength="10" class="input-field bg-white" style="padding:8px 12px; font-size:13px;">
+          </div>
+          <div>
+            <label class="label-sm text-slate-700">શિક્ષક ઇમેઇલ (Email ID)</label>
+            <input type="email" name="teacher_email" id="edit_teacher_email" placeholder="teacher@gmail.com" class="input-field bg-white" style="padding:8px 12px; font-size:13px;">
+          </div>
+        </div>
+
+        <div>
+          <label class="label-sm text-slate-700 flex items-center justify-between">
+            <span>નવો પાસવર્ડ (પાસવર્ડ ન બદલવો હોય તો ખાલી રાખો)</span>
+            <button type="button" onclick="generateTeacherPassword('edit_teacher_password')" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> પાસવર્ડ જનરેટ કરો
+            </button>
+          </label>
+          <div class="relative">
+            <input type="password" name="teacher_password" id="edit_teacher_password" placeholder="બદલવા માટે જ નવો પાસવર્ડ દાખલ કરો" class="input-field bg-white" style="padding:8px 38px 8px 12px; font-size:13px;">
+            <button type="button" onclick="togglePasswordVisibility('edit_teacher_password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 text-xs">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" name="send_credentials" id="edit_send_credentials" value="1" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+          <label for="edit_send_credentials" class="text-xs font-semibold text-slate-700 cursor-pointer select-none">
+            નવો પાસવર્ડ અને લૉગિન વિગતો શિક્ષકના ઇમેઇલ પર મોકલો
+          </label>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="label-sm">સત્રાંત પરિણામ તારીખ</label>
+          <input type="date" name="result_date_satrant" id="edit_result_date_satrant" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+
+        <div>
+          <label class="label-sm">વાર્ષિક પરિણામ તારીખ</label>
+          <input type="date" name="result_date_varshik" id="edit_result_date_varshik" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div>
+          <label class="label-sm">શૈક્ષણિક વર્ષ (Academic Year)</label>
+          <input type="text" name="academic_year" id="edit_academic_year" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+
+        <div>
+          <label class="label-sm">ઓરડા નંબર (Room No / Block)</label>
+          <input type="text" name="room_no" id="edit_room_no" class="input-field" style="padding:9px 12px; font-size:13.5px;">
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+        <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">
+          રદ કરો
+        </button>
+        <button type="submit" class="btn-emerald" style="padding:8px 18px; font-size:13.5px;">
+          અપડેટ કરો (Update Details)
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══ MODAL 3: BULK SET RESULT DATE ══ -->
+<div id="bulkDateModal" class="modal-backdrop">
+  <div class="modal-panel">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">બધા વર્ગો માટે પરિણામ તારીખ સેટ કરો</h3>
+      </div>
+      <button type="button" onclick="closeBulkDateModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+    </div>
+
+    <form method="POST" class="p-6 space-y-4">
+      <input type="hidden" name="csrf_token" value="25c328b049b731cd522b4fc23c5fb9c68e120a752afa2b0ba79370b8c853d991">
+      <input type="hidden" name="action" value="bulk_result_date">
+
+      <p class="text-xs text-slate-600 leading-relaxed">
+        જો આપની શાળાનું સત્રાંત કે વાર્ષિક પરિણામ તમામ ધોરણો માટે એક જ તારીખે જાહેર થવાનું હોય, તો અહીંથી 1-ક્લિકમાં બધા વર્ગો માટે તારીખો સેટ કરી શકો છો:
+      </p>
+
+      <div class="space-y-3.5 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div>
+          <label class="label-sm text-slate-700 font-bold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            સત્રાંત પરિણામ તારીખ (Satrant Result Date)
+          </label>
+          <input type="date" name="bulk_date_satrant" value="" class="input-field bg-white" style="padding:10px 12px; font-size:14px;">
+        </div>
+
+        <div>
+          <label class="label-sm text-slate-700 font-bold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            વાર્ષિક પરિણામ તારીખ (Varshik / Annual Result Date)
+          </label>
+          <input type="date" name="bulk_date_varshik" value="" class="input-field bg-white" style="padding:10px 12px; font-size:14px;">
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+        <button type="button" onclick="closeBulkDateModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">
+          રદ કરો
+        </button>
+        <button type="submit" class="btn-emerald" style="padding:8px 18px; font-size:13.5px;">
+          બધા વર્ગોમાં લાગુ કરો
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openAddModal() {
+  document.getElementById('addModal').classList.add('active');
+}
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('active');
+}
+
+function openEditModal(cls) {
+  document.getElementById('edit_id').value = cls.id || '';
+  document.getElementById('edit_class_teacher').value = cls.class_teacher || '';
+  document.getElementById('edit_teacher_phone').value = cls.teacher_phone || '';
+  document.getElementById('edit_teacher_email').value = cls.teacher_email || '';
+  if (document.getElementById('edit_teacher_can_login')) {
+    document.getElementById('edit_teacher_can_login').checked = (cls.teacher_can_login === null || cls.teacher_can_login == 1);
+  }
+  if (document.getElementById('edit_send_credentials')) {
+    document.getElementById('edit_send_credentials').checked = false;
+  }
+  document.getElementById('edit_result_date_varshik').value = cls.result_date_varshik || cls.result_date || '';
+  document.getElementById('edit_academic_year').value = cls.academic_year || '';
+  document.getElementById('edit_room_no').value = cls.room_no || '';
+  document.getElementById('editModalTitle').textContent = 'ધોરણ ' + cls.standard + ' - વર્ગ ' + cls.section + ' સુધારો';
+  document.getElementById('editModal').classList.add('active');
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('active');
+}
+
+function openBulkDateModal() {
+  document.getElementById('bulkDateModal').classList.add('active');
+}
+function closeBulkDateModal() {
+  document.getElementById('bulkDateModal').classList.remove('active');
+}
+
+function generateTeacherPassword(targetId) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#%';
+  let pwd = '';
+  for (let i = 0; i < 8; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  const input = document.getElementById(targetId);
+  if (input) {
+    input.type = 'text';
+    input.value = pwd;
+    input.focus();
+  }
+}
+
+function togglePasswordVisibility(targetId, btn) {
+  const input = document.getElementById(targetId);
+  if (!input) return;
+  const isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+  const icon = btn.querySelector('i');
+  if (icon) {
+    icon.className = isPass ? 'fa-regular fa-eye-slash text-indigo-600' : 'fa-regular fa-eye text-slate-400';
+  }
+}
+
+// Close modals on escape key or clicking backdrop
+window.addEventListener('click', function(e) {
+  ['addModal', 'editModal', 'bulkDateModal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (e.target === el) el.classList.remove('active');
+  });
+});
+</script>
+
+    </main><!-- /content-wrap -->
+
+    <!-- ══ Mobile Bottom Nav ══ -->
+        <div class="mobile-bottom-nav no-print">
+      <nav>
+                  <a href="?page=dashboard" class="">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>            <span>ડેશબોર્ડ</span>
+          </a>
+                  <a href="?page=result" class="">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>            <span>પરિણામ ડેશબોર્ડ</span>
+          </a>
+                  <a href="marks.php?modal=1" class="" onclick="if(window.openMarksOptionsModal){ openMarksOptionsModal(); return false; }">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>            <span>ગુણ એન્ટ્રી</span>
+          </a>
+                  <a href="patrak_f.php" class="">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>            <span>પત્રક F</span>
+          </a>
+              </nav>
+    </div>
+    
+  </div><!-- /main-area -->
+</div><!-- /app-shell -->
+
+<script>
+function toggleDrawer() {
+  const d = document.getElementById('mobileDrawer');
+  if (!d) return;
+  const isOpen = d.classList.toggle('open');
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const d = document.getElementById('mobileDrawer');
+    if (d && d.classList.contains('open')) {
+      d.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+// --- Scroll Position Preservation Across All Actions & Pages ---
+(function() {
+  document.addEventListener('submit', function() {
+    sessionStorage.setItem('ds_user_scroll', window.scrollY);
+  });
+
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button, .btn, .btn-primary, form button');
+    if (btn) {
+      sessionStorage.setItem('ds_user_scroll', window.scrollY);
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', function() {
+    const saved = sessionStorage.getItem('ds_user_scroll');
+    if (saved !== null) {
+      window.scrollTo({
+        top: parseInt(saved, 10),
+        behavior: 'instant'
+      });
+      sessionStorage.removeItem('ds_user_scroll');
+    }
+  });
+})();
+</script>
+<!-- ═════════════════════════════════════════════════════════════════
+     PREMIUM CENTERED MODAL DIALOG BOX (SUCCESS / ERROR / WARNING / INFO / CONFIRM)
+     ═════════════════════════════════════════════════════════════════ -->
+<div id="dsDialogModal" class="ds-dialog-backdrop" style="display: none;" role="dialog" aria-modal="true">
+  <div class="ds-dialog-card" id="dsDialogCard">
+    <!-- Close X button in top corner -->
+    <button type="button" class="ds-dialog-close-btn" onclick="closeModalDialog(false)" aria-label="Close">&times;</button>
+
+    <!-- Icon with pulsing aura glow -->
+    <div class="ds-dialog-icon-wrap" id="dsDialogIconWrap">
+      <div class="ds-dialog-icon-aura" id="dsDialogIconAura"></div>
+      <div class="ds-dialog-icon" id="dsDialogIcon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="ds-dialog-content">
+      <h3 class="ds-dialog-title" id="dsDialogTitle">સફળતા!</h3>
+      <div class="ds-dialog-body" id="dsDialogBody">
+        વિગતો સફળતાપૂર્વક સાચવવામાં આવી.
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="ds-dialog-actions" id="dsDialogActions">
+      <button type="button" class="ds-dialog-btn ds-dialog-btn-cancel" id="dsDialogCancelBtn" style="display: none;" onclick="closeModalDialog(false)">
+        રદ કરો
+      </button>
+      <button type="button" class="ds-dialog-btn ds-dialog-btn-primary" id="dsDialogOkBtn" onclick="closeModalDialog(true)">
+        <span>✓ સમજાઈ ગયું (OK)</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ─── ULTRA-PREMIUM CENTERED DIALOG BOX SYSTEM ─── */
+.ds-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ds-dialog-backdrop.ds-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ds-dialog-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  box-shadow: 
+    0 30px 70px -15px rgba(15, 23, 42, 0.4),
+    0 0 0 1px rgba(226, 232, 240, 0.9),
+    0 12px 30px -8px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 440px;
+  padding: 34px 28px 26px;
+  text-align: center;
+  position: relative;
+  transform: scale(0.85) translateY(18px);
+  opacity: 0;
+  transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.26s ease;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', 'Anek Gujarati', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.ds-dialog-backdrop.ds-show .ds-dialog-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Close Top Button */
+.ds-dialog-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  color: #64748b;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ds-dialog-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: rotate(90deg);
+}
+
+/* Icon Wrap & Pulse Aura */
+.ds-dialog-icon-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-dialog-icon-aura {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: dsPulseAura 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.ds-dialog-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.28);
+  transform: scale(0.9);
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ds-dialog-backdrop.ds-show .ds-dialog-icon {
+  transform: scale(1);
+}
+
+.ds-dialog-icon svg {
+  width: 38px;
+  height: 38px;
+  stroke-width: 2.3;
+}
+
+/* Themes */
+/* Success Theme */
+.ds-theme-success .ds-dialog-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  box-shadow: 0 14px 30px -4px rgba(16, 185, 129, 0.5);
+}
+.ds-theme-success .ds-dialog-icon-aura {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(16, 185, 129, 0) 70%);
+}
+.ds-theme-success .ds-dialog-btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 8px 22px -3px rgba(16, 185, 129, 0.45);
+}
+.ds-theme-success .ds-dialog-btn-primary:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 10px 26px -2px rgba(16, 185, 129, 0.55);
+  transform: translateY(-1px);
+}
+
+/* Error Theme */
+.ds-theme-error .ds-dialog-icon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  box-shadow: 0 14px 30px -4px rgba(239, 68, 68, 0.5);
+}
+.ds-theme-error .ds-dialog-icon-aura {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, rgba(239, 68, 68, 0) 70%);
+}
+.ds-theme-error .ds-dialog-btn-primary {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 8px 22px -3px rgba(239, 68, 68, 0.45);
+}
+.ds-theme-error .ds-dialog-btn-primary:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 10px 26px -2px rgba(239, 68, 68, 0.55);
+  transform: translateY(-1px);
+}
+
+/* Warning / Confirm Theme */
+.ds-theme-warning .ds-dialog-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  box-shadow: 0 14px 30px -4px rgba(245, 158, 11, 0.5);
+}
+.ds-theme-warning .ds-dialog-icon-aura {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, rgba(245, 158, 11, 0) 70%);
+}
+.ds-theme-warning .ds-dialog-btn-primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 8px 22px -3px rgba(245, 158, 11, 0.45);
+}
+.ds-theme-warning .ds-dialog-btn-primary:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 10px 26px -2px rgba(245, 158, 11, 0.55);
+  transform: translateY(-1px);
+}
+
+/* Info Theme */
+.ds-theme-info .ds-dialog-icon {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
+  box-shadow: 0 14px 30px -4px rgba(2, 132, 199, 0.5);
+}
+.ds-theme-info .ds-dialog-icon-aura {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.4) 0%, rgba(2, 132, 199, 0) 70%);
+}
+.ds-theme-info .ds-dialog-btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 8px 22px -3px rgba(2, 132, 199, 0.45);
+}
+.ds-theme-info .ds-dialog-btn-primary:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  box-shadow: 0 10px 26px -2px rgba(2, 132, 199, 0.55);
+  transform: translateY(-1px);
+}
+
+/* Content */
+.ds-dialog-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 10px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.ds-dialog-body {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #475569;
+  font-weight: 500;
+  margin-bottom: 24px;
+  max-height: 50vh;
+  overflow-y: auto;
+  word-break: break-word;
+  padding: 0 4px;
+}
+
+.ds-dialog-body ul {
+  text-align: left;
+  margin: 8px 0;
+  padding-left: 22px;
+}
+
+.ds-dialog-body li {
+  margin-bottom: 5px;
+}
+
+/* Actions */
+.ds-dialog-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-dialog-btn {
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 800;
+  padding: 13px 24px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  text-decoration: none;
+  flex: 1;
+}
+
+.ds-dialog-btn:active {
+  transform: scale(0.96);
+}
+
+.ds-dialog-btn-primary {
+  color: #ffffff;
+}
+
+.ds-dialog-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+}
+.ds-dialog-btn-cancel:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+@keyframes dsPulseAura {
+  0%, 100% { transform: scale(1); opacity: 0.45; }
+  50% { transform: scale(1.3); opacity: 0.85; }
+}
+
+@media (max-width: 480px) {
+  .ds-dialog-card {
+    padding: 28px 20px 22px;
+    border-radius: 24px;
+    max-width: 95%;
+  }
+  .ds-dialog-icon-wrap {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+  .ds-dialog-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+  }
+  .ds-dialog-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+  .ds-dialog-title {
+    font-size: 18px;
+  }
+  .ds-dialog-body {
+    font-size: 13.5px;
+    margin-bottom: 20px;
+  }
+  .ds-dialog-btn {
+    padding: 12px 18px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+}
+</style>
+
+<script>
+(function() {
+  let dsDialogCallback = null;
+
+  window.showModalDialog = function(opts) {
+    if (typeof opts === 'string') {
+      opts = { message: opts, type: 'info' };
+    }
+    const type = opts.type || 'info';
+    const title = opts.title || (
+      type === 'success' ? 'સફળતા!' : 
+      type === 'error' ? 'ભૂલ / ધ્યાન આપો!' : 
+      type === 'warning' ? 'ચેતવણી / ખાતરી કરો!' : 'માહિતી'
+    );
+    const message = opts.message || '';
+    const buttonText = opts.buttonText || (type === 'error' ? 'સમજાઈ ગયું (OK)' : '✓ ઠીક છે (OK)');
+    const showCancel = !!opts.showCancel;
+    const cancelText = opts.cancelText || 'રદ કરો (Cancel)';
+    dsDialogCallback = (typeof opts.onConfirm === 'function') ? opts.onConfirm : null;
+
+    const backdrop = document.getElementById('dsDialogModal');
+    const card = document.getElementById('dsDialogCard');
+    const iconEl = document.getElementById('dsDialogIcon');
+    const titleEl = document.getElementById('dsDialogTitle');
+    const bodyEl = document.getElementById('dsDialogBody');
+    const okBtn = document.getElementById('dsDialogOkBtn');
+    const cancelBtn = document.getElementById('dsDialogCancelBtn');
+
+    if (!backdrop) {
+      alert(message);
+      return;
+    }
+
+    // Set Theme Class
+    card.className = 'ds-dialog-card ds-theme-' + type;
+
+    // Set Icon
+    const icons = {
+      success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>',
+      error: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>',
+      warning: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+      info: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01"/></svg>'
+    };
+    iconEl.innerHTML = icons[type] || icons.info;
+
+    // Set Title & Body
+    titleEl.innerHTML = title;
+    bodyEl.innerHTML = message;
+    okBtn.innerHTML = `<span>${buttonText}</span>`;
+
+    if (cancelBtn) {
+      cancelBtn.style.display = showCancel ? 'inline-flex' : 'none';
+      cancelBtn.textContent = cancelText;
+    }
+
+    // Show Modal
+    backdrop.style.display = 'flex';
+    requestAnimationFrame(() => {
+      backdrop.classList.add('ds-show');
+      okBtn.focus();
+    });
+    document.body.style.overflow = 'hidden';
+
+    // Auto Close if set
+    if (opts.autoClose && opts.autoClose > 0) {
+      setTimeout(() => {
+        closeModalDialog(true);
+      }, opts.autoClose);
+    }
+  };
+
+  window.closeModalDialog = function(isConfirm) {
+    const backdrop = document.getElementById('dsDialogModal');
+    if (!backdrop) return;
+    backdrop.classList.remove('ds-show');
+    setTimeout(() => {
+      backdrop.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 280);
+
+    if (typeof dsDialogCallback === 'function') {
+      const cb = dsDialogCallback;
+      dsDialogCallback = null;
+      cb(isConfirm);
+    }
+  };
+
+  // Global Shorthands
+  window.showSuccessDialog = function(msg, title, cb) {
+    window.showModalDialog({ type: 'success', message: msg, title: title || 'સફળતાપૂર્વક સાચવાયું!', onConfirm: cb });
+  };
+  window.showErrorDialog = function(msg, title, cb) {
+    window.showModalDialog({ type: 'error', message: msg, title: title || 'ભૂલ / ધ્યાન આપો!', onConfirm: cb });
+  };
+  window.showWarningDialog = function(msg, title, cb) {
+    window.showModalDialog({ type: 'warning', message: msg, title: title || 'ચેતવણી!', onConfirm: cb });
+  };
+  window.showInfoDialog = function(msg, title, cb) {
+    window.showModalDialog({ type: 'info', message: msg, title: title || 'માહિતી', onConfirm: cb });
+  };
+  window.showConfirmDialog = function(msg, title, onConfirm, onCancel, confirmText, cancelText) {
+    window.showModalDialog({
+      type: 'warning',
+      message: msg,
+      title: title || 'ખાતરી કરો (Confirm)',
+      showCancel: true,
+      buttonText: confirmText || '✓ હા, આગળ વધો',
+      cancelText: cancelText || 'રદ કરો (Cancel)',
+      onConfirm: function(isOk) {
+        if (isOk && typeof onConfirm === 'function') {
+          onConfirm();
+        } else if (!isOk && typeof onCancel === 'function') {
+          onCancel();
+        }
+      }
+    });
+  };
+
+  // Keyboard listener for Escape & Enter
+  document.addEventListener('keydown', function(e) {
+    const backdrop = document.getElementById('dsDialogModal');
+    if (backdrop && backdrop.classList.contains('ds-show')) {
+      if (e.key === 'Escape') {
+        closeModalDialog(false);
+      } else if (e.key === 'Enter') {
+        closeModalDialog(true);
+      }
+    }
+  });
+
+  // Auto-trigger on page load if in-page alerts exist
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. Check for error alerts in page
+    const errEl = document.querySelector('.alert-error, .alert-banner-error, .alert-banner-danger, .alert-danger');
+    if (errEl && errEl.offsetParent !== null && !errEl.closest('#dsDialogModal')) {
+      const clone = errEl.cloneNode(true);
+      clone.querySelectorAll('svg').forEach(s => s.remove());
+      const msg = clone.innerHTML.trim();
+      if (msg) {
+        window.showErrorDialog(msg);
+        return;
+      }
+    }
+
+    // 2. Check for success alerts in page
+    const succEl = document.querySelector('.alert-success, .alert-banner-success');
+    if (succEl && succEl.offsetParent !== null && !succEl.closest('#dsDialogModal')) {
+      const clone = succEl.cloneNode(true);
+      clone.querySelectorAll('svg').forEach(s => s.remove());
+      const msg = clone.innerHTML.trim();
+      if (msg) {
+        succEl.style.display = 'none';
+        window.showSuccessDialog(msg);
+      }
+    }
+  });
+})();
+</script></body>
+</html>
